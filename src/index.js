@@ -39,6 +39,12 @@ const resolvers = {
             link = { ...link, ...args };
             links.push(link);
             return link;            
+        },
+        deleteLink: (root, args) => {
+            let linkIndex = links.findIndex(link => link.id === args.id);
+            var link = links[linkIndex];
+            links.splice(linkIndex, 1);
+            return link;
         }
     }
 };
