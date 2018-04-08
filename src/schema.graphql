@@ -1,5 +1,18 @@
 # import Link from "./generated/prisma.graphql"
 
+# couldnt just import from prisma, since it has a password field, which should not be exposed
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    links: [Link!]!
+}
+
+type AuthPayload {
+    token: String
+    user: User
+}
+
 type Query {
     info: String!
     feed: [Link!]!
@@ -10,4 +23,6 @@ type Mutation {
     post(url: String!, description: String!): Link!
     updateLink(id: ID!, url: String!, description: String!): Link
     deleteLink(id: ID!): Link
+    signup(email: String!, password: String!, name: String!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
 }
