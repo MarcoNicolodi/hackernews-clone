@@ -1,57 +1,38 @@
 const { GraphQLServer } = require('graphql-yoga');
-
-let links = [
-    {
-        id: 'link-0',
-        url: 'www.howtographql.com',
-        description: 'Fullstack tutorial for GraphQL',
-    },
-    {
-        id: 'link-1',
-        url: 'egghead.io',
-        description: 'Amazing courses!',
-    }
-]
-
-let idCount = links.length;
+const { Prisma } = require('prisma-binding'); 
 
 const resolvers = {
     Query: {
         info: () => `This is the api for a Hackernews clone`,
-        feed: () => links,
-        link: (root, args) => { 
-            return links.filter(l => l.id === args.id)[0];
+        feed: (root, args, context, info) => {
+            console.log(info)
+            return context.db.query.links({}, info);
         }
     },
     Mutation: {
-        post: (root, args) => {
-            const link = {
-                id: `link-${idCount++}`,
-                description: args.description,
-                url: args.url,
-            };
-            links.push(link);
-            return link;
-        },
-        updateLink: (root, args) => {            
-            let linkIndex = links.findIndex(link => link.id === args.id);
-            let link = links.splice(linkIndex, 1);
-            link = { ...link, ...args };
-            links.push(link);
-            return link;            
-        },
-        deleteLink: (root, args) => {
-            let linkIndex = links.findIndex(link => link.id === args.id);
-            var link = links[linkIndex];
-            links.splice(linkIndex, 1);
-            return link;
-        }
+        post: (root, args, context, info) => {
+            return context.db.mutation.createLink({
+                data: {
+                    url: args.url,
+                    description: args.url
+                }
+            }, info);
+        },        
     }
 };
 
 const server = new GraphQLServer({
     typeDefs: './src/schema.graphql',
     resolvers,
+    context: req => ({
+        ...req,
+        db: new Prisma({
+            typeDefs: './src/generated/prisma.graphql',
+            endpoint: 'http://localhost:4466/hackernews-node/dev',
+            secret: 'mysecret123',
+            debug: true
+        }),
+    }),
 });
 
 const options = {
