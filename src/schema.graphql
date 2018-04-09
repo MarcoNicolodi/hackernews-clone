@@ -1,4 +1,4 @@
-# import Link from "./generated/prisma.graphql"
+# import Link, LinkSubscriptionPayload, VoteSubscriptionPayload Vote from "./generated/prisma.graphql"
 
 # couldnt just import from prisma, since it has a password field, which should not be exposed
 type User {
@@ -25,4 +25,10 @@ type Mutation {
     deleteLink(id: ID!): Link
     signup(email: String!, password: String!, name: String!): AuthPayload
     login(email: String!, password: String!): AuthPayload
+    vote(linkId: ID!): Vote
+}
+
+type Subscription {
+    newLink: LinkSubscriptionPayload,
+    newVote: VoteSubscriptionPayload,
 }
