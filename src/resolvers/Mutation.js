@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { APP_SECRET, getUserId } = require('../utils');
 
 
-async function signup(parent, args, context, info) {
+async function signup(parent, args, context) {
   const password = await bcrypt.hash(args.password, 10);
   const user = await context.db.mutation.createUser({
     data: { ...args, password },
@@ -16,7 +16,7 @@ async function signup(parent, args, context, info) {
   };
 }
 
-async function login(parent, args, context, info) {
+async function login(parent, args, context) {
   const user = await context.db.query.user({ where: { email: args.email } }, '{ id password }');
   if (!user) {
     throw new Error('Invalid user');

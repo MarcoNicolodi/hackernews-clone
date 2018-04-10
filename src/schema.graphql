@@ -1,4 +1,4 @@
-# import Link, LinkSubscriptionPayload, VoteSubscriptionPayload Vote from "./generated/prisma.graphql"
+# import Link, LinkSubscriptionPayload, VoteSubscriptionPayload, Vote, LinkOrderByInput from "./generated/prisma.graphql"
 
 # couldnt just import from prisma, since it has a password field, which should not be exposed
 type User {
@@ -8,6 +8,11 @@ type User {
     links: [Link!]!
 }
 
+type Feed {
+    links: [Link!]!
+    count: Int!
+}
+
 type AuthPayload {
     token: String
     user: User
@@ -15,7 +20,7 @@ type AuthPayload {
 
 type Query {
     info: String!
-    feed: [Link!]!
+    feed(filter: String, skip: Int, first: Int, orderBy: LinkOrderByInput): Feed!
     link(id: ID!): Link
 }
 
